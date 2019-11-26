@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_meeting_oppourtunity" model="ir.ui.view">
+        <field name="name">Meetings on opportunity</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//header" position="inside">
+                    <button string="New Quotation" name="1029" type="action" class="oe_highlight" attrs="{'invisible': [('type', '=', 'lead')]}" context="{'search_default_partner_id': partner_id,'default_partner_id': partner_id,'default_team_id': team_id,                                   'default_campaign_id': campaign_id,                                   'default_medium_id': medium_id,                                   'default_source_id': source_id}"/>
+                    <button name="action_set_won_rainbowman" string="Mark Won" type="object" class="oe_highlight" attrs="{'invisible': ['|',('type', '=', 'lead'),'&amp;',('active','=',False),('probability', '=', 100)]}"/>
+                    <button name="400" string="Mark Lost" type="action" class="oe_highlight" context="{'default_lead_id': active_id}" attrs="{'invisible': ['|',('active', '=', False),('probability', '&lt;', 100),('type', '=', 'lead')]}"/>
+                    <field name="stage_id" widget="statusbar" clickable="True" options="{'fold_field': 'fold'}" domain="['|', ('team_id', '=', team_id), ('team_id', '=', False)]" attrs="{'invisible': ['|',('active', '=', False),('type', '=', 'lead')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="inside">
+                    <h2 class="o_row" attrs="{'invisible': [('type', '=', 'lead')]}">
+                                <div>
+                                    <label for="planned_revenue" class="oe_edit_only"/>
+                                    <div class="o_row">
+                                        <field name="company_currency" invisible="1"/>
+                                        <field name="planned_revenue" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                        <span class="oe_grey"> at </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="probability" class="oe_edit_only"/>
+                                    <div class="o_row">
+                                        <field name="probability" widget="integer"/>
+                                        <span>%</span>
+                                    </div>
+                                </div>
+                            </h2>
+                </xpath>
+                 <xpath expr="//page[2]" position="after">
+                                                 <page name="lead" string="Contact Information">
+                            <group>
+                                <group>
+                                    <field name="partner_name"/>
+                                    <label for="street" string="Address"/>
+                                    <div class="o_address_format">
+                                        <field name="street" placeholder="Street..." class="o_address_street"/>
+                                        <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                        <field name="city" placeholder="City" class="o_address_city"/>
+                                        <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
+                                        <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                        <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                    </div>
+                                    <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
+                                </group>
+
+                                <group>
+                                    <label for="contact_name"/>
+                                    <div class="o_row">
+                                        <field name="contact_name"/>
+                                        <field name="title" placeholder="Title" domain="[]" options="{&quot;no_open&quot;: True}"/>
+                                    </div>
+                                    <field name="function"/>
+                                    <field name="mobile"/>
+                                    <field name="opt_out"/>
+                                </group>
+                                <group string="Marketing">
+                                    <field name="campaign_id"/>
+                                    <field name="medium_id"/>
+                                    <field name="source_id"/>
+                                </group>
+                                <group string="Misc" name="Misc">
+                                    <field name="day_open" groups="base.group_no_one"/>
+                                    <field name="day_close" groups="base.group_no_one"/>
+                                    <field name="referred"/>
+                                    <field name="type" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+
+                 </xpath>
+
+                <xpath expr="//field[@name='partner_id']" position="after">
+                      <field name="partner_id" string="Customer" domain="[('customer', '=', True)]" context="{'search_default_customer': 1,'default_name': partner_name, 'default_street': street, 'default_street2': street2, 'default_city': city,'default_state_id': state_id, 'default_zip': zip,'default_country_id': country_id, 'default_function': function,'default_phone': phone, 'default_mobile': mobile,'default_email': email_from,'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website}"/>
+                </xpath>
+
+
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" type="object" context="{'partner_id': partner_id}" name="action_schedule_meeting" attrs="{'invisible': [('type', '=', 'lead')]}" icon="fa-calendar">
+                        <div class="o_stat_info">
+                            <field name="meeting_count" class="o_stat_value"/>
+                            <span class="o_stat_text" attrs="{'invisible': [('meeting_count', '&lt;', 2)]}"> Meetings</span>
+                            <span class="o_stat_text" attrs="{'invisible': [('meeting_count', '&gt;', 1)]}"> Meeting</span>
+                        </div>
+                    </button>
+                    <button class="oe_stat_button" type="action"
+                            name="%(sale_crm.sale_action_quotations)d" attrs="{'invisible': [('type', '=', 'lead')]}" icon="fa-pencil-square-o"
+                            context="{'default_partner_id': partner_id, 'search_default_draft': 1, 'search_default_sent': 1,
+                            'default_is_onchange_partner':is_onchange_partner,
+                            'default_is_onchange_user':is_onchange_user,
+                            'default_customer_class': customer_class,
+                            'default_user_id': user_id,
+                            'default_external_sale_person': external_sale_person,
+                            'default_representative_id': representative_id,
+                            'default_tag_ids': tag_ids,
+                            'default_campaign_id': campaign_id,
+                            'default_medium_id': medium_id,
+                            'default_source_id': source_id}">
+                        <div class="o_stat_info">
+                            <field name="sale_number" class="o_stat_value"/>
+                            <span class="o_stat_text"> Quotation(s) </span>
+                        </div>
+                    </button>
+
+
+                    <!-- <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive" attrs="{'invisible': [('active', '=', True), ('probability', '&lt;', 100)]}">
+                        <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                    </button>-->
+                </xpath>
+
+
+            </data>
+        </field>
+    </record>
+</odoo>
