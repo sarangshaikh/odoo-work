@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_Partner_form_extension" model="ir.ui.view">
+		<field name="name">res.partner.form.inherit</field>
+		<field name="model">res.partner</field>
+		<field name="inherit_id" ref="base.view_partner_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='user_id']" position="before">
+				<field name="is_customer"/>
+			</xpath>
+
+<!--			<xpath expr="//field[@name='property_supplier_payment_term_id']" position="before">-->
+<!--				<field name="is_supplier"/>-->
+<!--			</xpath>-->
+
+			<xpath expr="//div[@class='o_row']" position="after">
+				<group>
+					<field name="customer_class"  string="Customer Classification" />
+<!--					<field name="is_customer"/>-->
+<!--class="oe_inline"-->
+				</group>
+			</xpath>
+
+		</field>
+	</record>
+
+</odoo>
