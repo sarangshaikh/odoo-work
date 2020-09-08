@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add functionality of penalty in invoice form -->
+    <record id="view_invoice_form_inherited" model="ir.ui.view">
+        <field name="name">account.invoice.form</field>
+        <field name="model">account.move</field>
+	<field name="inherit_id" ref ="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr ="//field[@name='invoice_user_id']" position="after">
+                <field name ="fc_invoice" attrs="{'invisible': ['|',('type','!=','out_invoice'),('is_fc_invoice','=',True)]}" readonly='1' />
+                <field name ="is_fc_invoice" invisible="1"/>
+            </xpath>
+<!--            <xpath expr ="//field[@name='journal_id']" position="after">-->
+<!--&lt;!&ndash;                <field name ="late_fee_line_created" invisible="1"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <field name ="statement_charges_line_created" invisible="1"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <field name ="fc_line_saved" invisible="1" />&ndash;&gt;-->
+<!--            </xpath>-->
+
+<!-- readonly if invoice is posted-->
+            <xpath expr ="//field[@name='invoice_incoterm_id']" position="before">
+                <field name ="penalty" attrs="{'invisible': [('type','!=','out_invoice')]}"/> <!-- remove condition -->
+                    <label for='Penalty Amount' string="Penalty Amount" attrs="{'invisible': [('penalty', '!=', 'fixed')]}" class="oe_inline"/>
+                        <div attrs="{'invisible': [('penalty', '!=', 'fixed')]}">
+                            <field name="fixed_amount"  class="oe_inline" />
+                        </div>
+                    <label for="Penalty Percentage" string="Penalty Percentage" attrs="{'invisible': [('penalty', '!=', 'penalty_percentage')]}" class="oe_inline"/>
+                        <div attrs="{'invisible': [('penalty', '!=', 'penalty_percentage')]}">
+                            <field name="percentage_of_penalty" class="oe_inline"/>
+                            <label for="%%" string="%%"
+                                attrs="{'invisible': [('penalty', '!=', 'penalty_percentage')]}" class="oe_inline"/>
+                        </div>
+            </xpath>
+<!--             <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='discount']" position="before">-->
+<!--              <field name ="active" invisible="1"/>-->
+<!--             </xpath>-->
+        </field> 
+    </record>
+</odoo>
+
+
