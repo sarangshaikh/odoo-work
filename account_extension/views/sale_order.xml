@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+     <record id="sale_view_order_form_extended" model="ir.ui.view">
+        <field name="name">sale.order.form.extended</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+             <xpath expr="//field[@name='validity_date']" position="before">
+                <field name="business"/>
+             </xpath>
+
+             <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                <field name="duration" optional="hide"/>
+                <field name="acv" string="ACV" optional="hide"/>
+                <field name="tcv" string="TCV" optional="hide"/>
+             </xpath>
+
+        </field>
+     </record>
+
+
+    <record id="view_quotation_tree_with_onboarding_extended" model="ir.ui.view">
+        <field name="name">sale Order Tree view Extended</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="business" optional="hide"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_delivery_date_on_sale_order_line_ext" model="ir.ui.view">
+        <field name="name">sale.order.view_delivery_date_on_sale_order_line_ext</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field  name="business" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="sales_order_filter_extended_view">
+        <field name="name">sales_order_filter_extended_view</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch"  type="xml">
+          <xpath expr="//search" position="inside">
+              <filter name ="Bussiness" context="{'group_by':'business'}"/>
+              <filter name="business" string="New Bussiness" domain="[('business','=', 'new')]"/>
+              <filter name="business" string="Renewal Bussiness" domain="[('business','=', 'renewal')]"/>
+          </xpath>
+        </field>
+    </record>
+
+
+
+    <record id="sale_order_product_search__ext_view" model="ir.ui.view">
+        <field name="name">sale.order.product.search.ext.view</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.view_order_product_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                  <filter name ="Bussiness" context="{'group_by':'business'}"/>
+                  <filter name="business" string="New Bussiness" domain="[('business','=', 'new')]"/>
+                  <filter name="business" string="Renewal Bussiness" domain="[('business','=', 'renewal')]"/>
+            </xpath>
+            </field>
+        </record>
+
+
+
+</odoo>

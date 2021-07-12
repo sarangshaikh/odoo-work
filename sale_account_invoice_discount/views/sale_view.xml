@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <record id="view_order_invoice_discount_form" model="ir.ui.view">
+            <field name="name">sale.order.invoice.discount.form.view</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='order_line']/tree/field[@name='discount']" position="before">
+                  <field name="discount_method" attrs="{'column_invisible': [('parent.discount_selection', '=', 'global')]}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']/tree/field[@name='discount']" position="after">
+                    <field name="fixed_amount" attrs="{'column_invisible': [('parent.discount_selection', '=', 'global')],'invisible': ['|',('discount_method', '=', 'per'),('discount_method','=',False)]}"/>
+                </xpath>
+
+                <xpath expr="//tree/field[@name='discount']" position="attributes">
+                    <attribute name="attrs">{'column_invisible': [('parent.discount_selection', '=', 'global')],'invisible': ['|',('discount_method', '=', 'fix'),('discount_method','=',False)]}</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='pricelist_id']" position="after">
+                    <field name="conversion_rate_enable"/>
+                    <field name="conversion_rate" attrs="{'invisible':[('conversion_rate_enable','=',False)]}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                    <field name="estimated_cost" optional="show"/>
+                    <field name="actual_cost" optional="show"/>
+                </xpath>
+
+<!--                <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="attributes">-->
+<!--                     <attribute name="optional">show</attribute>-->
+<!--                </xpath>-->
+
+                <xpath expr="//field[@name='order_line']/tree/field[@name='tax_id']" position="attributes">
+                    <attribute name="attrs">{'column_invisible': [('parent.discount_selection', '=', 'global')]}</attribute>
+                </xpath>
+
+                <xpath expr="//group[@name='sale_total']" position="after">
+                    <group style="width: 65%%">
+                        <div>
+                            <label for="discount_selection"/>
+                            <field name="discount_selection" class="oe_inline"/>
+                        </div>
+
+                        <br/>
+
+                        <div attrs="{'invisible':[('discount_selection','=','line')]}">
+                            <label for="discount_method"/>
+                            <field name="discount_method" class="oe_inline"/>
+                        </div>
+
+                        <br/>
+
+                        <div attrs="{'invisible':[('discount_selection','=','line')]}">
+                            <label for="discount_amount"/>
+                            <field name="discount_amount" class="oe_inline"/>
+                            <span string="%%"
+                                attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline"/>
+                         </div>
+
+
+                         <br/>
+
+                        <div attrs="{'invisible':[('discount_selection','=','line')]}">
+                            <label for="tax_ids"/>
+                            <field name="tax_ids" widget="many2many_tags" class="oe_inline" />
+                        </div>
+
+                    </group>
+                </xpath>
+                
+                <field name="amount_tax" position="attributes">
+                    <attribute name="attrs">{'invisible':[('discount_selection','=','global')]}</attribute>
+                </field>
+                <field name="amount_tax" position="before">
+                     <field name="taxes_amount" attrs="{'invisible':[('discount_selection','=','line')]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                     <field name="discount_amt" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </field>
+
+                <xpath expr="//group[@name='sale_total']" position="inside">
+                     <field name="conversion_rate" readonly="1" force_save="1" string="Conversion Rate (PKR)" />
+                     <field name="total_conversion_rate" widget="monetary" string="Total Conversion Rate (PKR)" />
+                     <field name="margin" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="view_account_invoice_discount_form" model="ir.ui.view">
+            <field name="name">account.move.discount.form.view</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+
+
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='discount']" position="before">
+                  <field name="discount_type" attrs="{'column_invisible': [('parent.discount_selection', '=', 'global')]}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='discount']" position="after">
+                    <field name="fixed_amount" attrs="{'column_invisible': [('parent.discount_selection', '=', 'global')],'invisible': ['|',('discount_type', '=', 'percent'),('discount_type','=',False)]}"/>
+                </xpath>
+
+                <xpath expr="//tree/field[@name='discount']" position="attributes">
+                    <attribute name="attrs">{'column_invisible': [('parent.discount_selection', '=', 'global')],'invisible': ['|',('discount_type', '=', 'fixed'),('discount_type','=',False)]}</attribute>
+                </xpath>
+                <xpath expr="//tree/field[@name='tax_ids']" position="attributes">
+                    <attribute name="attrs">{'column_invisible': [('parent.discount_selection', '=', 'global')]}</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='discount']" position="before">
+                    <field name="discount_type" invisible="1" />
+                    <field name="fixed_amount" invisible="1" />
+                    <field name="estimated_cost" invisible="1" />
+                    <field name="actual_cost" invisible="1" />
+                </xpath>
+
+
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="conversion_rate_enable" attrs="{'invisible':[('type','not in',('out_invoice','out_refund'))]}"/>
+                    <field name="conversion_rate" attrs="{'invisible':['|',('conversion_rate_enable','=',False),('type','not in',('out_invoice','out_refund'))]}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
+                    <field name="estimated_cost" attrs="{'column_invisible':[('parent.type','not in',('out_invoice','out_refund'))]}"/>
+                    <field name="actual_cost" attrs="{'column_invisible':[('parent.type','not in',('out_invoice','out_refund'))]}"/>
+                </xpath>
+
+               <xpath expr="//field[@name='narration']" position="before">
+                   <group style="width: 65%%" invisible ="1">
+
+                        <div>
+                            <label for="discount_selection"/>
+                            <field name="discount_selection" class="oe_inline" attrs="{'readonly':[('state','=','posted')]}"/>
+                        </div>
+                   </group>
+               </xpath>
+
+<!--                        <br/>-->
+
+<!--&lt;!&ndash;                        <div attrs="{'invisible':[('discount_selection','=','line')]}">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <label for="discount_method"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <field name="discount_method" class="oe_inline" attrs="{'readonly':[('state','=','posted')]}"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+
+<!--                        <br/>-->
+
+<!--                        <div attrs="{'invisible':[('discount_selection','=','line')]}">-->
+<!--                            <label for="discount_amount"/>-->
+<!--                            <field name="discount_amount" class="oe_inline" attrs="{'readonly':[('state','=','posted')]}"/>-->
+<!--                            <span string="%%"-->
+<!--                                attrs="{'invisible': [('discount_method', '!=', 'percent')]}" class="oe_inline"/>-->
+<!--                         </div>-->
+
+<!--                        <br/>-->
+<!--&lt;!&ndash;                       <button name="calc_discount"  string="(Apply)" type="object"&ndash;&gt;-->
+<!--&lt;!&ndash;                            class="oe_edit_only oe_link"&ndash;&gt;-->
+<!--&lt;!&ndash;                            attrs="{'invisible':[('state','not in',('draft','sent'))]}"/>&ndash;&gt;-->
+<!--                   </group>-->
+<!--                </xpath>-->
+<!--                <field name="amount_untaxed" position="after">-->
+<!--                     <field name="discount_amt" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('type','in',('in_invoice','in_refund','in_receipt'))]}"/>-->
+<!--                </field>-->
+
+                <field name="amount_total" position="after">
+                     <field name="conversion_rate" string="Conversion Rate (PKR)"  readonly="1" force_save="1" attrs="{'invisible':[('type','not in',('out_invoice','out_refund'))]}"/>
+                     <field name="total_conversion_rate" string="Total Conversion Rate (PKR)" attrs="{'invisible':[('type','not in',('out_invoice','out_refund'))]}"/>
+                     <field name="margin" widget="monetary"  attrs="{'invisible':[('type','not in',('out_invoice','out_refund'))]}"/>
+                </field>
+
+            </field>
+        </record>
+
+
+
+
+    </data>
+</odoo>

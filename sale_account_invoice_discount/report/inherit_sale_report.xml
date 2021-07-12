@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_sale_discount_inherit" inherit_id="sale.report_saleorder_document">
+            <xpath expr="//table[@class='table table-sm o_main_table']/thead/tr/th[4]" position="after">
+                <t t-set="display_fixed_amount" t-value="any([l.fixed_amount for l in doc.order_line])"/>
+                <th name="th_fixed_amount" t-if="display_fixed_amount" class="text-right">
+                    <span>Fixed Discount</span>
+                </th>
+            </xpath>
+            <xpath expr="//table[@class='table table-sm o_main_table']/thead/tr/th[@name='th_taxes']"
+                   position="replace">
+                <t t-if="doc.discount_selection == 'line'">
+                    <th name="th_taxes" class="text-right">Taxes</th>
+                </t>
+                <!--			<attribute name="attrs">{'column_invisible': [('parent.discount_selection', '=', 'global')]}</attribute>-->
+            </xpath>
+
+            <xpath expr="//tbody[@class='sale_tbody']/t/tr/t/td[4]" position="after">
+                <t t-if="line.fixed_amount">
+                    <td class="text-right">
+                        <span t-esc="line.fixed_amount"/>
+                    </td>
+                </t>
+            </xpath>
+
+            <xpath expr="//tbody[@class='sale_tbody']/t/tr/t/td[@name='td_taxes']" position="replace">
+                <t t-if="doc.discount_selection == 'line'">
+                    <td name="td_taxes" class="text-right">
+                        <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.tax_id))"/>
+                    </td>
+                </t>
+            </xpath>
+
+            <xpath expr="//div[hasclass('clearfix')]/div/div/table" position="replace">
+                <table class="table table-condensed">
+                    <tr class="border-black">
+                        <td>Untaxed Amount</td>
+                        <td class="text-right">
+                            <span t-field="doc.amount_untaxed"/>
+                        </td>
+                    </tr>
+                    <tr t-if="doc.discount_amt &gt; 0">
+                        <td>Discount Amount</td>
+                        <td class="text-right">
+                            <span t-field="doc.discount_amt"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Taxes</td>
+                        <td class="text-right">
+                            <t t-if="doc.discount_selection == 'line'">
+                                <span t-field="doc.amount_tax"
+                                      t-field-options='{"widget": "monetary", "display_currency": "doc.pricelist_id.currency_id"}'/>
+                            </t>
+                            <t t-else="">
+                                <span t-field="doc.taxes_amount"
+                                      t-field-options='{"widget": "monetary", "display_currency": "doc.pricelist_id.currency_id"}'/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr class="border-black">
+                        <td>
+                            <strong>Total</strong>
+                        </td>
+                        <td class="text-right">
+                            <span t-field="doc.amount_total"
+                                  t-field-options='{"widget": "monetary", "display_currency": "doc.pricelist_id.currency_id"}'/>
+                        </td>
+                    </tr>
+                    <t t-if="doc.conversion_rate_enable">
+
+                        <tr class="border-black">
+                            <td>
+                                <strong>Convers@#$@#$@#ion Rate</strong>
+                            </td>
+                            <td class="text-right">
+                                <span t-field="doc.conversion_rate"/>
+                            </td>
+                        </tr>
+                        <tr class="border-black">
+                            <td>
+                                <strong>Total Conksdjf234#@$@version Rate</strong>
+                            </td>
+                            <td class="text-right">
+                                <span t-field="doc.total_conversion_rate"/>
+                            </td>
+                        </tr>
+                    </t>
+                </table>
+            </xpath>
+        </template>
+    </data>
+</odoo>
